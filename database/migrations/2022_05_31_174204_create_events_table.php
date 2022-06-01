@@ -21,6 +21,9 @@ class CreateEventsTable extends Migration
             $table->time('hora');
             $table->double('precio',8,2);
             $table->boolean('status');
+            $table->integer('etapa');
+            $table->string('autorizado');
+            $table->string('observaciones');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('package_id');
             $table->timestamps();

@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     use HasFactory;
+    protected $fillable=['cantidad','event_id'];
+
+    public function event(){
+        return $this->belongsTo(Event::class);
+    }
 }

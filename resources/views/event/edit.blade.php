@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Actualizar paquete
+    Actualizar evento
 @endsection
 
 @section('content')
@@ -11,13 +11,13 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">Actualizar paquete</span>
+                        <span class="card-title">Actualizar evento</span>
                     </div>
                     <div class="card-body">
-                        {!! Form::model($package,['route'=>['package.update',$package],'autocomplete' => 'off','files' => true, 'method' => 'patch']) !!}
+                        {!! Form::model($event,['route'=>['event.update',$event],'autocomplete' => 'off','files' => true, 'method' => 'patch']) !!}
                             {{ method_field('PATCH') }}
                             @csrf
-                            @include('package.form')
+                            @include('event.form')
                         {!! Form::close() !!}
                     </div>
                 </div>

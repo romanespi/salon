@@ -16,7 +16,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = DB::table('roles');
+        $roles = Role::all();
         return view('role.index',compact('roles'));
     }
     /**
@@ -55,7 +55,8 @@ class RoleController extends Controller
      */
     public function show($id)
     {
-        //
+        $role = Role::find($id);
+        return view('role.show',compact('role'));
     }
 
     /**

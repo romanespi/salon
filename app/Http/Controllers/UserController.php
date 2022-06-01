@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -13,7 +17,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::all();
+        return view('user.index', compact('users'));
     }
 
     /**
@@ -23,7 +28,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        $roles = Role::all();
+        $user = new User();
+        return view('user.create',compact('user','roles'));
     }
 
     /**
@@ -34,11 +41,29 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $rol = $request->role_id;
+        /*$rol = $request->role_id;
         if($rol == null)
         {
-            
-        }
+            Validator::make($data, [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+        }*/
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'role_id' => ['nullable'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+        User::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'role_id' => $request['role_id'],
+            'password' => Hash::make($request['password']),
+        ]);
+        return redirect()->route('user.index')
+        ->with('success', 'usuario creado satisfactoriamente.');
     }
 
     /**
@@ -49,7 +74,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        
     }
 
     /**
@@ -60,7 +85,9 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        //
+        $roles = Role::all();
+        $user = User::find($id);
+        return view('user.edit',compact('user','roles')); 
     }
 
     /**
@@ -70,9 +97,13 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, User $user)
     {
-        //
+        $user->update([
+            'password' => Hash::make($request['password']),
+        ]);
+        return redirect()->route('user.index')
+            ->with('success', 'Usuario actualizado');
     }
 
     /**
@@ -83,6 +114,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        User::find($id)->delete();
+        return redirect()->route('user.index')->with('success', 'Usuario eliminado!');
     }
 }

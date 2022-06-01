@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Mostrar paquete
+    Mostrar evento
 @endsection
 
 @section('content')
@@ -11,10 +11,10 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="float-left">
-                            <span class="card-title">Mostrar paquete</span>
+                            <span class="card-title">Mostrar evento</span>
                         </div>
                         <div class="float-right">
-                            <a class="btn btn-primary my-2" href="{{ route('package.index') }}"> Regresar</a>
+                            <a class="btn btn-primary my-2" href="{{ route('event.index') }}"> Regresar</a>
                         </div>
                     </div>
 
@@ -22,17 +22,17 @@
                         
                         <div class="form-group">
                             <strong>Nombre:</strong>
-                            {{ $package->nombre }}
+                            {{ $event->nombre }}
                         </div>
 
                         <div class="form-group">
                             <strong>Descripcion:</strong>
-                            {{ $package->descripcion }}
+                            {{ $event->descripcion }}
                         </div>
 
                         <div class="form-group">
                             <strong>Estado:</strong>
-                            {{ $package->status ? 'Activo' : 'Inactivo' }}
+                            {{ $event->status ? 'Activo' : 'Inactivo' }}
                         </div>
                     </div>
                 </div>

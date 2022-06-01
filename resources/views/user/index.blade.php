@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Paquetes
+        Usuarios
 @endsection
 
 @section('content')
@@ -13,17 +13,13 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Paquetes') }}
+                                {{ __('Usuarios') }}
                             </span>
 
                              <div class="float-right">
-                                 @auth()
-                                 @if (auth()->user()->role_id == 1)
-                                        <a href="{{ route('package.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                        {{ __('Crear nuevo') }}
-                                        </a>
-                                    @endif
-                                @endauth
+                                <a href="{{ route('user.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                  {{ __('Crear nuevo') }}
+                                </a>
                               </div>
                         </div>
                     </div>
@@ -40,8 +36,8 @@
                                     <tr>
                                         <th>ID</th>
 										<th>Nombre</th>
-                                        <th>Descripcion</th>
-                                        <th>Estado</th>
+                                        <th>Correo</th>
+                                        <th>Rol</th>
                                         <th>Creado</th>
                                         <th>Actualizado</th>
 
@@ -49,27 +45,28 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($packages as $package)
+                                    @foreach ($users as $user)
                                         <tr>
-                                            <td>{{$package->id}}</td>
-											<td>{{$package->nombre }}</td>
-                                            <td>{{$package->descripcion }}</td>
-                                            <td>{{$package->status ? 'Activo' : 'Inactivo' }}</td>
-                                            <td>{{$package->created_at}}</td>
-                                            <td>{{$package->updated_at}}</td>    
+                                            <td>{{$user->id}}</td>
+											<td>{{$user->name }}</td>
+                                            <td>{{$user->email }}</td>
+                                            @if ($user->role_id == null)
+                                                <td>N/A</td>
+                                            @else
+                                            <td>{{$user->role->role }}</td>
+                                            @endif
+                                            
+                                            <td>{{$user->created_at}}</td>
+                                            <td>{{$user->updated_at}}</td>
+
                                             <td>
-                                                <form action="{{ route('package.destroy',$package->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('package.show',$package->id) }}"><i class="fa fa-fw fa-eye"></i> Ver</a>
-                                                    @auth
-                                                    <a class="btn btn-sm btn-success" href="{{ route('package.edit',$package->id) }}"><i class="fa fa-fw fa-edit"></i> Editar</a>
+                                                <form action="{{ route('user.destroy',$user->id) }}" method="POST">
+                                                     <a class="btn btn-sm btn-primary " href="{{ route('user.show',$user->id) }}"><i class="fa fa-fw fa-eye"></i> Ver</a>
+                                                    <a class="btn btn-sm btn-warning" href="{{ route('user.edit',$user->id) }}"><i class="fa fa-fw fa-edit"></i> Restablecer contraseña</a>
                                                     {{csrf_field()}}
                                                     @method('DELETE')
+                                                       <!-- <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Eliminar</button> -->   
                                                     
-                                                         @if (auth()->user()->role_id == 1)
-                                                        <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Eliminar</button>    
-                                                    @endif
-                                                    @endauth
-                                                   
                                                 </form>
                                             </td>
                                         </tr>
@@ -79,7 +76,6 @@
                         </div>
                     </div>
                 </div>
-               {{$packages->links()}}
             </div>
         </div>
     </div>

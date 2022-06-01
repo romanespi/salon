@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Paquetes
+    Eventos
 @endsection
 
 @section('content')
@@ -13,17 +13,17 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Paquetes') }}
+                                {{ __('Eventos') }}
                             </span>
 
                              <div class="float-right">
-                                 @auth()
-                                 @if (auth()->user()->role_id == 1)
-                                        <a href="{{ route('package.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                @if (auth()->user()->role_id == 2)
+                                    <a href="{{ route('event.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
                                         {{ __('Crear nuevo') }}
-                                        </a>
-                                    @endif
-                                @endauth
+                                    </a>
+                                @endif
+                                
+
                               </div>
                         </div>
                     </div>
@@ -41,35 +41,36 @@
                                         <th>ID</th>
 										<th>Nombre</th>
                                         <th>Descripcion</th>
+                                        <th>Fecha</th>
+                                        <th>Hora</th>
+                                        <th>Precio</th>
                                         <th>Estado</th>
-                                        <th>Creado</th>
-                                        <th>Actualizado</th>
-
+                                        <th>Paquete</th>
+                                        <th>Etapa</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($packages as $package)
+                                    @foreach ($events as $event)
                                         <tr>
-                                            <td>{{$package->id}}</td>
-											<td>{{$package->nombre }}</td>
-                                            <td>{{$package->descripcion }}</td>
-                                            <td>{{$package->status ? 'Activo' : 'Inactivo' }}</td>
-                                            <td>{{$package->created_at}}</td>
-                                            <td>{{$package->updated_at}}</td>    
+                                            <td>{{$event->id}}</td>
+											<td>{{$event->nombre }}</td>
+                                            <td>{{$event->descripcion }}</td>
+                                            <td>{{$event->fecha}}</td>
+                                            <td>{{$event->hora}}</td>
+                                            <td>{{$event->precio}}</td>
+                                            <td>{{$event->status ? 'Confirmado' : 'Sin confirmar' }}</td>
+                                            <td>{{$event->package->nombre}}</td>   
+                                            <td>{{$event->etapa}}</td>
                                             <td>
-                                                <form action="{{ route('package.destroy',$package->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('package.show',$package->id) }}"><i class="fa fa-fw fa-eye"></i> Ver</a>
-                                                    @auth
-                                                    <a class="btn btn-sm btn-success" href="{{ route('package.edit',$package->id) }}"><i class="fa fa-fw fa-edit"></i> Editar</a>
+                                                <form action="{{ route('event.destroy',$event->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary " href="{{ route('event.show',$event->id) }}"><i class="fa fa-fw fa-eye"></i> Ver</a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('event.edit',$event->id) }}"><i class="fa fa-fw fa-edit"></i> Editar</a>
                                                     {{csrf_field()}}
                                                     @method('DELETE')
-                                                    
-                                                         @if (auth()->user()->role_id == 1)
+                                                    @if (auth()->user()->role_id == 2)
                                                         <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Eliminar</button>    
                                                     @endif
-                                                    @endauth
-                                                   
                                                 </form>
                                             </td>
                                         </tr>
@@ -79,7 +80,7 @@
                         </div>
                     </div>
                 </div>
-               {{$packages->links()}}
+               {{--$events->links()--}}
             </div>
         </div>
     </div>

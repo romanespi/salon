@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Mostrar paquete
+ Rol
 @endsection
 
 @section('content')
@@ -11,28 +11,18 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="float-left">
-                            <span class="card-title">Mostrar paquete</span>
+                            <span class="card-title">Rol</span>
                         </div>
                         <div class="float-right">
-                            <a class="btn btn-primary my-2" href="{{ route('package.index') }}"> Regresar</a>
+                            <a class="btn btn-primary my-2" href="{{ route('role.index') }}"> Regresar</a>
                         </div>
                     </div>
 
                     <div class="card-body">
                         
                         <div class="form-group">
-                            <strong>Nombre:</strong>
-                            {{ $package->nombre }}
-                        </div>
-
-                        <div class="form-group">
-                            <strong>Descripcion:</strong>
-                            {{ $package->descripcion }}
-                        </div>
-
-                        <div class="form-group">
-                            <strong>Estado:</strong>
-                            {{ $package->status ? 'Activo' : 'Inactivo' }}
+                            <strong>Rol:</strong>
+                            {{ $role->role }}
                         </div>
                     </div>
                 </div>
