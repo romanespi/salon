@@ -41,10 +41,11 @@
                                         <th>ID</th>
 										<th>Nombre</th>
                                         <th>Descripcion</th>
-                                        <th>Fecha</th>
-                                        <th>Hora</th>
+                                        <th>Fecha y Hora</th>
+                                        <th>Usuario</th>
                                         <th>Precio</th>
                                         <th>Estado</th>
+                                        <th>Autorizado</th>
                                         <th>Paquete</th>
                                         <th>Etapa</th>
                                         <th>Acciones</th>
@@ -56,12 +57,27 @@
                                             <td>{{$event->id}}</td>
 											<td>{{$event->nombre }}</td>
                                             <td>{{$event->descripcion }}</td>
-                                            <td>{{$event->fecha}}</td>
-                                            <td>{{$event->hora}}</td>
+                                            <td>{{$event->fecha}} {{$event->hora}}</td>
+                                            <td>{{$event->user->name}}</td>
                                             <td>{{$event->precio}}</td>
                                             <td>{{$event->status ? 'Confirmado' : 'Sin confirmar' }}</td>
+                                            <td>{{$event->autorizado}}</td>
                                             <td>{{$event->package->nombre}}</td>   
-                                            <td>{{$event->etapa}}</td>
+                                            <td>
+                                                @switch($event->etapa)
+                                                    @case(1)
+                                                        Pendiente
+                                                        @break
+                                                    @case(2)
+                                                        En ejecucion
+                                                        @break
+                                                    @case(3)
+                                                        Concluido
+                                                        @break
+                                                    @default
+                                                    -
+                                                @endswitch
+                                            </td>
                                             <td>
                                                 <form action="{{ route('event.destroy',$event->id) }}" method="POST">
                                                     <a class="btn btn-sm btn-primary " href="{{ route('event.show',$event->id) }}"><i class="fa fa-fw fa-eye"></i> Ver</a>

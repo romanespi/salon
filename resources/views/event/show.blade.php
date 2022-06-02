@@ -34,6 +34,14 @@
                             <strong>Estado:</strong>
                             {{ $event->status ? 'Activo' : 'Inactivo' }}
                         </div>
+
+                        <div class="form-group">
+                           
+                            <strong>Imagenes</strong>
+                            <br>
+                            
+                            @include('photo.index')
+                        </div>
                     </div>
                 </div>
             </div>

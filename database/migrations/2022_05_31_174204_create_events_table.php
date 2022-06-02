@@ -23,7 +23,7 @@ class CreateEventsTable extends Migration
             $table->boolean('status');
             $table->integer('etapa');
             $table->string('autorizado');
-            $table->string('observaciones');
+            $table->string('observaciones')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('package_id');
             $table->timestamps();

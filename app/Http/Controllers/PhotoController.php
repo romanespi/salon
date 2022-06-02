@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
+use App\Models\Photo;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PhotoController extends Controller
 {
@@ -13,7 +17,7 @@ class PhotoController extends Controller
      */
     public function index()
     {
-        //
+
     }
 
     /**
@@ -45,7 +49,8 @@ class PhotoController extends Controller
      */
     public function show($id)
     {
-        //
+        $photo = Photo::find($id);
+        return view('photo.show',compact('photo'));
     }
 
     /**
@@ -56,19 +61,44 @@ class PhotoController extends Controller
      */
     public function edit($id)
     {
-        //
+        $user = Auth::user();
+        $photo = Photo::find($id);
+        $foto = Photo::where('id',$photo->id)->first();
+
+        $event = Event::where('id',$foto->event_id)->first();
+
+        $user1 = User::where('id',$foto->usuario)->first();
+
+        if(($user->role_id == 1) && (($user1->role_id == 3 or $user1->role_id == 1) && ($event->status == 1)))
+        {
+            
+        return view('photo.edit',compact('photo'));
+        }
+        elseif(($user->id == $foto->usuario) && ($event->status == 1))
+        {
+        return view('photo.edit',compact('photo'));
+        }
+        else{
+            return redirect()->route('event.index')
+            ->with('success', 'Imagen no te pertenece');
+        }
+        
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function update(Request $request, Photo $photo)
     {
-        //
+        
+        $request->validate([
+            'usuario' => 'nullable'
+        ]);
+        $imagen = $request->file('file');
+        $rutaGuardarImg = 'imagen/';
+        $imagenProducto = date('YmdHis'). "." . $imagen->getClientOriginalExtension();
+        $imagen->move($rutaGuardarImg, $imagenProducto);
+        $photo->update([
+            'url' => $imagenProducto,
+        ]);
+        
     }
 
     /**
@@ -79,6 +109,21 @@ class PhotoController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = Auth()->user();
+        $foto = Photo::where('id',$id)->first();
+
+        $event = Event::where('id',$foto->event_id)->first();
+
+        if(($user->id == $foto->usuario) && ($event->status == 1))
+        {
+            Photo::find($id)->delete();
+            return redirect()->route('event.index')
+            ->with('success', 'Foto eliminado satisfactoriamente');
+        }else{
+            return redirect()->route('event.index')
+            ->with('success', 'No puedes eliminar fotografia');
+        }
+        
+        
     }
 }

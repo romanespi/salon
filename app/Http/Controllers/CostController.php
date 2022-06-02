@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cost;
+use App\Models\Event;
 use Illuminate\Http\Request;
 
 class CostController extends Controller
@@ -13,7 +15,8 @@ class CostController extends Controller
      */
     public function index()
     {
-        //
+        $costs = Cost::all();
+        return view('cost.index',compact('costs'));
     }
 
     /**
@@ -23,62 +26,43 @@ class CostController extends Controller
      */
     public function create()
     {
-        //
+        $cost = new Cost();
+        $events=Event::where('status',1)->pluck('nombre','id');
+        return view('cost.create',compact('cost','events'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        Cost::create($request->all());
+        return redirect()->route('cost.index')
+            ->with('success', 'Costo creado satisfactoriamente.');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        //
+        $cost = Cost::find($id);
+        return view('cost.show',compact('cost'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        //
+        $cost = Cost::find($id);
+        $events=Event::where('status',1)->pluck('nombre','id');
+        return view('cost.edit',compact('cost','events'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function update(Request $request, Cost $cost)
     {
-        //
+        $cost->update($request->all());
+        return redirect()->route('cost.index')
+            ->with('success', 'Costo actualizado satisfactoriamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        //
+        Cost::find($id)->delete();
+        return redirect()->route('cost.index')
+            ->with('success', 'Costo eliminado satisfactoriamente');
     }
+
 }

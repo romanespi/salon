@@ -20,16 +20,26 @@
             {{ Form::time('hora', $event->hora, ['class' => 'form-control' . ($errors->has('hora') ? ' is-invalid' : ''), 'placeholder' => 'hora']) }}
             {!! $errors->first('hora', '<div class="invalid-feedback">:message</div>') !!}
         </div>
-        <div class="form-group">
-            {!! Form::label('Costo') !!}
-            {!! Form::number('precio', $event->precio, ['class' => 'form-control', 'step' => '0.01' . ($errors->has('precio') ? ' is-invalid' : ''), 'placeholder' => 'precio']) !!}
-        </div>
+        
         <div class="form-group">
             {{ Form::label('Paquete') }}
             {{ Form::select('package_id',$packages, $event->package_id, ['class' => 'form-control' . ($errors->has('package') ? ' is-invalid' : ''), 'placeholder' => 'package']) }}
             {!! $errors->first('package', '<div class="invalid-feedback">:message</div>') !!}
         </div>
+        <div class="form-group">
+            <div class="row">
+                Imagenes tomadas
+            </div>
+            <div class="row">
+                {!! Form::label('file','Agregar fotos') !!}
+                {!! Form::file('file', ['class' => 'form-control-file']) !!}
+            </div>
+        </div>
         @if(auth()->user()->role_id == 1)
+            <div class="form-group">
+                {!! Form::label('Costo') !!}
+                {!! Form::number('precio', $event->precio, ['class' => 'form-control', 'step' => '0.01' . ($errors->has('precio') ? ' is-invalid' : ''), 'placeholder' => 'precio']) !!}
+            </div>
             <div class="form-group">
                 <br>
                 <strong>Estado</strong>

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Cost extends Model
 {
     use HasFactory;
-    protected $fillable=['descripcion','costo','event_id'];
+    protected $fillable=['cantidad','event_id'];
 
     public function event(){
     return $this->belongsTo(Event::class);

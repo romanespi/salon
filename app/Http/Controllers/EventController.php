@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Package;
+use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -26,21 +28,15 @@ class EventController extends Controller
             return view('event.index',compact('events'));
         }elseif($user->role_id == 2)
         {
-            $events = Event::all();
-            if($events == null)
-            {
-                $events = Event::all();
-                return view('event.index',compact('events'));
-            }
-            else
-            {
-                $events = Event::where('user_id',$user->id)
-                ->get();
-                return view('event.index',compact('events'));
-            }
-            
+                $events = Event::with('user')->where('user_id',$user->id)->get();
+                return view('event.index',compact('events'));    
+        }
 
-            
+        if($user->role_id == 3)
+        {
+            $events = Event::where('status',1)->where('autorizado',1)->get();
+            //return
+            return response()->json($events);
         }
         
     }
@@ -90,7 +86,7 @@ class EventController extends Controller
             $event->precio = 0;
             $event->status = 0;
             $event->etapa = 1;
-            $event->obervaciones = '';
+            $event->observaciones = '';
             $event->package_id = $request->package_id;
             $event->user_id = $usuario;
             $event->autorizado = '';
@@ -110,7 +106,8 @@ class EventController extends Controller
     public function show($id)
     {
         $event = Event::find($id);
-        return view('event.show',compact('event'));
+        $photos = Photo::where('event_id',$id)->get();
+        return view('event.show',compact('event','photos'));
     }
 
     /**
@@ -138,8 +135,7 @@ class EventController extends Controller
         }
         elseif(($events->status == 1) && ($user->role_id == 2))
         {
-            return redirect()->route('event.index')
-            ->with('success', 'No se puede editar un evento confirmado.');
+            return view('event.edit',compact('event','packages'));
         }else{
             return redirect()->route('event.index')
             ->with('success', 'No se puede editar un evento confirmado.');
@@ -156,8 +152,11 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
-        $role = Auth::user()->role_id;
-        if($role == 1)
+
+        
+        $estado = $event->status;
+        $role = Auth::user();
+        if($role->role_id == 1)
         {
             $request->validate([
                 'nombre'=>'required',
@@ -168,37 +167,77 @@ class EventController extends Controller
                 'status'=>'nullable',
                 'user_id'=>'nullable',
                 'package_id'=>'required',
+                'observaciones' => 'nullable',
             ]);
-            
+
+            $usero = User::where('id',$role->id)->first();
+            $event->etapa = $request->etapa;
+            $event->observaciones = $request->observaciones;
+            $event->autorizado = $role->name;
             $event->precio = $request->precio;
-            $event->status = $request->status; 
+            $event->status = $request->status;
+            $foto = Photo::where('event_id',$event->id)->first();
+            if((($estado == 1) or ($request->status == 1)))
+            {
+                if($imagen = $request->file('file')) {
+                    $rutaGuardarImg = 'imagen/';
+                    $imagenProducto = date('YmdHis'). "." . $imagen->getClientOriginalExtension();
+                    $imagen->move($rutaGuardarImg, $imagenProducto);
+                    $event->photos()->create([
+                        'url' => $imagenProducto,
+                        'usuario' => $usero->id,
+                    ]);            
+                }
+            }else{
+                return redirect()->route('event.index')
+                    ->with('success', 'Necesita estar el evento confirmado para subir una foto.');
+            }
+            
             $event->save();
+            return redirect()->route('event.index')
+                    ->with('success', 'Evento creado satisfactoriamente.');
+            
         }else{
             $request->validate([
                 'nombre'=>'required',
                 'descripcion'=>'required',
                 'fecha'=>'required',
                 'hora'=>'required',
-                'precio'=>'nullable',
-                'status'=>'nullable',
                 'user_id'=>'nullable',
                 'package_id'=>'required',
             ]);
-            
+            $usero = User::where('id',$role->id)->first();
             $usuario = Auth::user()->id;
             $event->nombre = $request->nombre;
             $event->descripcion = $request->descripcion;
             $event->fecha = $request->fecha;
             $event->hora = $request->hora;
-            $event->precio = 0;
-            $event->status = 0;
             $event->user_id = $usuario;
             $event->package_id = $request->package_id;
-    
-            $event->save();
+
+            $foto = Photo::where('event_id',$event->id)->first();
+            if(($estado == 1))
+            {
+                if($imagen = $request->file('file')) {
+                    $rutaGuardarImg = 'imagen/';
+                    $imagenProducto = date('YmdHis'). "." . $imagen->getClientOriginalExtension();
+                    $imagen->move($rutaGuardarImg, $imagenProducto);
+                    $event->photos()->create([
+                        'url' => $imagenProducto,
+                        'usuario' => $usero->id,
+                    ]);
+                    $event->save();
+                return redirect()->route('event.index')
+                    ->with('success', 'Evento creado satisfactoriamente.');       
+                }
+            }else{
+                $event->save();
+                return redirect()->route('event.index')
+                    ->with('success', 'Evento creado satisfactoriamente, no puedes subir imagenes sin evento confirmado');
+            }
+            
         }
-        return redirect()->route('event.index')
-        ->with('success', 'Evento creado satisfactoriamente.');
+        
     }
 
     /**
