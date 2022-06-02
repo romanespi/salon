@@ -61,7 +61,9 @@
                                                 <form action="{{ route('package.destroy',$package->id) }}" method="POST">
                                                     <a class="btn btn-sm btn-primary " href="{{ route('package.show',$package->id) }}"><i class="fa fa-fw fa-eye"></i> Ver</a>
                                                     @auth
-                                                    <a class="btn btn-sm btn-success" href="{{ route('package.edit',$package->id) }}"><i class="fa fa-fw fa-edit"></i> Editar</a>
+                                                    @if (auth()->user()->role_id == 1)
+                                                        <a class="btn btn-sm btn-success" href="{{ route('package.edit',$package->id) }}"><i class="fa fa-fw fa-edit"></i> Editar</a>                                                        
+                                                    @endif
                                                     {{csrf_field()}}
                                                     @method('DELETE')
                                                     

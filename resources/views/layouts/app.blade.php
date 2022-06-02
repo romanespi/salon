@@ -73,16 +73,18 @@
                                 
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                @auth
+                                @auth 
+                                @if ((auth()->user()->role_id == 1) or (auth()->user()->role_id == 3))
+                                            <a class="dropdown-item" href="{{ route('payment.index') }}">
+                                                {{ __('Abonos') }}
+                                            </a>
+                                        @endif
                                     @if (auth()->user()->role_id == 1)
                                         <a class="dropdown-item" href="{{ route('role.index') }}">
                                         {{ __('Roles') }}
                                         </a>
                                         <a class="dropdown-item" href="{{ route('user.index') }}">
                                         {{ __('Usuarios') }}
-                                        </a>
-                                        <a class="dropdown-item" href="{{ route('payment.index') }}">
-                                        {{ __('Abonos') }}
                                         </a>
                                         <a class="dropdown-item" href="{{ route('cost.index') }}">
                                         {{ __('Gastos') }}

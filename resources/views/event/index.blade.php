@@ -22,7 +22,6 @@
                                         {{ __('Crear nuevo') }}
                                     </a>
                                 @endif
-                                
 
                               </div>
                         </div>

@@ -16,9 +16,17 @@ class PackageController extends Controller
     }
 
     public function create()
-    {
-        $package = new Package();
-        return view('package.create',compact('package'));
+    {   
+        $user = Auth::user()->role_id;
+        if ($user == 1) {
+            $package = new Package();
+            return view('package.create',compact('package'));
+        
+        }else {
+            return redirect()->route('home')->with('success','No Puedes ingresar, solo gerente');
+        }
+
+        
     }
 
     public function store(Request $request)
@@ -36,15 +44,12 @@ class PackageController extends Controller
 
     public function edit($id)
     {
-        $user = Auth::user();
-        if($user->role_id == null)
-        {
+        $user = Auth::user()->role_id;
+        if ($user == 1) {
             return redirect()->route('package.index')
             ->with('success', 'Usted no es un gerente');
-        }else
-        {
-            $package = Package::find($id);
-            return view('package.edit',compact('package'));    
+        }else {
+            return redirect()->route('home')->with('success','No Puedes ingresar, solo gerente');
         }
         
     }

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Nette\Utils\Json;
 
 class EventController extends Controller
 {
@@ -22,21 +23,20 @@ class EventController extends Controller
     {
         //$events = DB::table('events')->Simplepaginate(10);
         $user = Auth::user();
-        if($user->role_id == 1 or $user->role_id == 3)
+        if($user->role_id == 1)
         {
             $events = Event::all();
             return view('event.index',compact('events'));
         }elseif($user->role_id == 2)
         {
-                $events = Event::with('user')->where('user_id',$user->id)->get();
-                return view('event.index',compact('events'));    
-        }
-
-        if($user->role_id == 3)
+            $events = Event::with('user')->where('user_id',$user->id)->get();
+            return view('event.index',compact('events'));    
+        }elseif($user->role_id == 3)
         {
-            $events = Event::where('status',1)->where('autorizado',1)->get();
-            //return
-            return response()->json($events);
+            //$events = Event::where('status',1)->where('etapa',1)->get();
+            //return $events;
+            $events = Event::all();
+            return view('event.index',compact('events'));
         }
         
     }
@@ -136,7 +136,10 @@ class EventController extends Controller
         elseif(($events->status == 1) && ($user->role_id == 2))
         {
             return view('event.edit',compact('event','packages'));
-        }else{
+        }elseif($events->etapa == 2 && $user->role_id == 3){
+            return view('event.edit',compact('event','packages'));
+        }
+        else{
             return redirect()->route('event.index')
             ->with('success', 'No se puede editar un evento confirmado.');
         }
@@ -197,7 +200,23 @@ class EventController extends Controller
             return redirect()->route('event.index')
                     ->with('success', 'Evento creado satisfactoriamente.');
             
-        }else{
+        }elseif($role->id == 3)
+        {
+            $usero = User::where('id',$role->id)->first();
+            $foto = Photo::where('event_id',$event->id)->first();
+                if($imagen = $request->file('file')) {
+                    $rutaGuardarImg = 'imagen/';
+                    $imagenProducto = date('YmdHis'). "." . $imagen->getClientOriginalExtension();
+                    $imagen->move($rutaGuardarImg, $imagenProducto);
+                    $event->photos()->create([
+                        'url' => $imagenProducto,
+                        'usuario' => $usero->id,
+                    ]);
+                return redirect()->route('event.index')
+                    ->with('success', 'Evento creado satisfactoriamente.');       
+                }
+        }
+        else{
             $request->validate([
                 'nombre'=>'required',
                 'descripcion'=>'required',
@@ -235,6 +254,8 @@ class EventController extends Controller
                 return redirect()->route('event.index')
                     ->with('success', 'Evento creado satisfactoriamente, no puedes subir imagenes sin evento confirmado');
             }
+            return redirect()->route('event.index')
+                    ->with('success',' no puedes editar evento confirmado');
             
         }
         
